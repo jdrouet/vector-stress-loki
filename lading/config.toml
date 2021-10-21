@@ -1,0 +1,25 @@
+worker_threads = 10
+prometheus_addr = "0.0.0.0:8383"
+
+[targets.batch]
+target_uri = "http://vector-batch:8282/v1/input"
+bytes_per_second = "500 Mb"
+parallel_connections = 100
+method.type = "Post"
+method.variant = "DatadogLog"
+method.maximum_prebuild_cache_size_bytes = "500 Mb"
+
+[targets.batch.headers]
+dd-api-key = "deadbeef"
+
+[targets.stream]
+target_uri = "http://vector-stream:8282/v1/input"
+bytes_per_second = "500 Mb"
+parallel_connections = 100
+method.type = "Post"
+method.variant = "DatadogLog"
+method.maximum_prebuild_cache_size_bytes = "500 Mb"
+
+[targets.stream.headers]
+dd-api-key = "deadbeef"
+

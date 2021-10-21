@@ -1,0 +1,27 @@
+[sources.internal_metrics]
+type = "internal_metrics"
+
+# [sources.generator]
+# type = "generator"
+# format = "json"
+# interval = 1
+
+[sources.datadog_agent]
+type = "datadog_agent"
+acknowledgements = false
+address = "0.0.0.0:8282"
+
+[sinks.prometheus]
+type = "prometheus_exporter"
+inputs = ["internal_metrics"]
+address = "0.0.0.0:9494"
+
+[sinks.loki]
+type = "loki"
+inputs = [ "datadog_agent" ]
+# inputs = ["generator"]
+endpoint = "http://loki-stream:3100"
+encoding.codec = "json"
+
+[sinks.loki.labels]
+agent = "vector"

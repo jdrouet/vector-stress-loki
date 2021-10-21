@@ -1,0 +1,61 @@
+version: '2.2'
+
+services:
+  lading:
+    image: ghcr.io/blt/lading:latest
+    command: /http_gen
+    mem_limit: 500m
+    networks:
+      - backend
+    volumes:
+      - ./lading/config.toml:/etc/lading/http_gen.toml:ro
+
+  prometheus:
+    image: bitnami/prometheus
+    mem_limit: 500m
+    networks:
+      - backend
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus/config.yml:/etc/prometheus/prometheus.yml:ro
+
+  vector-batch:
+    image: timberio/vector:latest-debian
+    mem_limit: 200m
+    environment:
+      - LOKI_DOMAIN=loki-batch
+    networks:
+      - backend
+    volumes:
+      - ./vector/config-batch.toml:/etc/vector/vector.toml:ro
+
+  vector-stream:
+    image: jdrouet/vector:9278-loki-sink-rewrite
+    mem_limit: 200m
+    environment:
+      - LOKI_DOMAIN=loki-batch
+    networks:
+      - backend
+    volumes:
+      - ./vector/config-stream.toml:/etc/vector/vector.toml:ro
+
+  loki-batch:
+    image: grafana/loki
+    mem_limit: 500m
+    networks:
+      - backend
+    volumes:
+      - ./loki/config.yml:/etc/loki/config.yaml:ro
+
+  loki-stream:
+    image: grafana/loki
+    mem_limit: 500m
+    networks:
+      - backend
+    volumes:
+      - ./loki/config.yml:/etc/loki/config.yaml:ro
+
+networks:
+  backend: {}
+
